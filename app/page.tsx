@@ -2,7 +2,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Button } from "@/components/ui/button";
-import { Music, Sparkles, Share2, Clock, Heart } from "lucide-react";
+import {
+  Music,
+  Sparkles,
+  Share2,
+  Clock,
+  Heart,
+  Wand2,
+  Search,
+} from "lucide-react";
+import { searchForArtists } from "@/utils/findArtists";
+import { searchForTrack } from "@/utils/findTrack";
 
 interface StatsItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -23,6 +33,14 @@ const LandingPage: React.FC = () => {
   const moodInputRef = useRef<HTMLDivElement | null>(null);
   const statsRef = useRef<HTMLDivElement | null>(null);
   const notesContainerRef = useRef<HTMLDivElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [artistName, setArtistName] = useState("");
+  const [trackName, setTrackName] = useState("");
+  const [favArtists, setFavArtists] = useState<string[]>([]);
+  const [favTracks, setFavTracks] = useState<string[]>([]);
+  const [favGenres, setFavGenres] = useState<string[]>([]);
 
   const [notePositions, setNotePositions] = useState<NotePosition[]>([]);
 
@@ -108,6 +126,18 @@ const LandingPage: React.FC = () => {
     return () => animations.revert();
   }, [notePositions]);
 
+  useEffect(() => {
+    const modalElement = modalRef.current;
+
+    if (showModal && modalElement) {
+      gsap.fromTo(
+        modalElement,
+        { x: 200, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.5, ease: "back.out", stagger: 0.2 }
+      );
+    }
+  }, [showModal]);
+
   const handleMoodButtonClick = (mood: string): void => {
     console.log(`Selected mood: ${mood}`);
   };
@@ -130,6 +160,72 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen font-josefin-sans bg-gradient-to-br from-purple-900 via-purple-700 to-purple-900 text-white relative overflow-hidden">
+      {showModal && (
+        <div className="h-[100vh] text-[#2D3748] w-full backdrop-blur-sm absolute bg-white/30 z-10 flex justify-center items-center">
+          <div ref={modalRef} className="lg:w-[40%] w-[90%] relative p-4 h-[90%] gap-10 flex flex-col bg-white/80 rounded-md">
+            <div className="">
+              <h1 className="text-xl font-bold">Personalize your results</h1>
+              <p>The more you tell us, the better the result</p>
+            </div>
+            <div className="">
+              <div className="">
+                <h1 className="font-bold">1.) Tell us your favorite artist(s)</h1>
+                <form onSubmit={(e)=>searchForArtists(e, artistName)} className="border-[1px] bg-white border-[#efefef] rounded-full w-[50%] p-2 flex">
+                  <input
+                    type="text"
+                    value={artistName}
+                    onChange={(e) => setArtistName(e.target.value)}
+                    placeholder="Artist name"
+                    className="bg-transparent focus:outline-none outline-none w-full"
+                  />
+                  <button type="submit" onClick={(e)=>searchForArtists(e, artistName)} className="text-[#6B46C1] rounded-full p-2 ml-2">
+                    <Search />
+                  </button>
+                </form>
+              </div>
+              <div className="mt-10">
+                <h1 className="font-bold">2.) Tell us your favorite track(s)</h1>
+                <form onSubmit={(e)=>searchForTrack(e, artistName)} className="border-[1px] bg-white border-[#efefef] rounded-full w-[50%] p-2 flex">
+                  <input
+                    type="text"
+                    value={trackName}
+                    onChange={(e) => setTrackName(e.target.value)}
+                    placeholder="Track name"
+                    className="bg-transparent focus:outline-none outline-none w-full"
+                  />
+                  <button type="submit" onClick={(e)=>searchForTrack(e, artistName)} className="text-[#6B46C1] rounded-full p-2 ml-2">
+                    <Search />
+                  </button>
+                </form>{" "}
+              </div>
+              {/* <div className="mt-10">
+                <h1 className="font-bold">3.) Tell us your favorite genres</h1>
+                <div className="border-[1px] bg-white border-[#efefef] rounded-full w-[50%] p-2 flex">
+                  <input
+                    type="text"
+                    placeholder="Genre name"
+                    className="bg-transparent focus:outline-none outline-none w-full"
+                  />
+                  <button className="text-[#6B46C1] rounded-full p-2 ml-2">
+                    <Search />
+                  </button>
+                </div>{" "}
+              </div> */}
+            </div>
+            <div className="absolute left-0 bottom-0 w-full flex">
+              <button
+                className="w-1/2 py-3 bg-teal-500 hover:bg-teal-400 rounded-bl-md"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button className="w-1/2 py-3 bg-[#6B46C1] hover:bg-[#8258e6] rounded-br-md">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div
         ref={notesContainerRef}
         className="absolute inset-0 pointer-events-none"
@@ -148,8 +244,8 @@ const LandingPage: React.FC = () => {
         ))}
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <header ref={headerRef} className="text-center mb-16 ">
+      <div className="container mx-auto px-4 py-10">
+        <header ref={headerRef} className="text-center mb-10 ">
           <h1 className="text-6xl font-bold mb-4">
             <span className="text-white">mood</span>
             <span className="text-teal-400 italic">.ify</span>
@@ -159,12 +255,11 @@ const LandingPage: React.FC = () => {
           </p>
         </header>
 
-        <div ref={moodInputRef} className="max-w-2xl mx-auto mb-12">
+        <div ref={moodInputRef} className="max-w-2xl mx-auto mb-10">
           <div className="flex items-center pr-2 rounded-2xl bg-white/10 backdrop-blur-sm border-2 border-white/20">
             <input
               type="text"
               placeholder="Type your feeling..."
-              
               onChange={handleInputChange}
               className="w-full h-16 pr-2 pl-6 border-none bg-transparent text-lg placeholder:text-purple-300 focus:border-none focus:ring-0 focus:outline-none transition-all duration-300"
             />
@@ -186,6 +281,15 @@ const LandingPage: React.FC = () => {
                 {mood}
               </button>
             ))}
+          </div>
+
+          <div className="flex mt-6 justify-center">
+            <button
+              onClick={() => setShowModal(true)}
+              className="inline-flex gap-1"
+            >
+              Personalize <Wand2 />
+            </button>
           </div>
         </div>
 
