@@ -36,7 +36,7 @@ const LandingPage: React.FC = () => {
     { icon: Clock, label: "Hours of Music", value: "100K+" },
     { icon: Heart, label: "Happy Users", value: "10K+" },
   ];
-  
+
   const getMoodClasses = (mood: MoodType) => ({
     background: {
       default:
@@ -83,7 +83,7 @@ const LandingPage: React.FC = () => {
         "bg-mood-focused-primary-secondary hover:bg-mood-focused-primary-secondary/80",
     }[mood],
   });
-  
+
   const moodClasses = getMoodClasses(mood);
 
   useEffect(() => {
@@ -168,6 +168,18 @@ const LandingPage: React.FC = () => {
     return () => animations.revert();
   }, [notePositions]);
 
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showModal]);
+
   return (
     <div className="min-h-screen font-josefin-sans text-white relative overflow-hidden">
       <div
@@ -176,15 +188,17 @@ const LandingPage: React.FC = () => {
       />
 
       {showModal && (
-        <PersonalizeModal
-          mood={mood}
-          showModal={showModal}
-          setShowModal={setShowModal}
-          favArtists={favArtists}
-          favTracks={favTracks}
-          setFavArtists={setFavArtists}
-          setFavTracks={setFavTracks}
-        />
+        <div>
+          <PersonalizeModal
+            mood={mood}
+            showModal={showModal}
+            setShowModal={setShowModal}
+            favArtists={favArtists}
+            favTracks={favTracks}
+            setFavArtists={setFavArtists}
+            setFavTracks={setFavTracks}
+          />
+        </div>
       )}
 
       <div

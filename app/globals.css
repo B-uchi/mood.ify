@@ -6,8 +6,11 @@
 
 .toast{
   font-family: "Josefin Sans" !important;
-  z-index: 100 !important;
+  z-index: 50 !important;
 
+}
+.toast-container{
+z-index: 10;
 }
 
 /* From Uiverse.io by barisdogansutcu */ 
