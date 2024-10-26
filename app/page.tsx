@@ -10,8 +10,6 @@ import { getMoodClasses } from "@/utils/moodClasses";
 
 const NOTES_COUNT = 25;
 
-
-
 const LandingPage: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
   const moodInputRef = useRef<HTMLDivElement | null>(null);
@@ -133,6 +131,7 @@ const LandingPage: React.FC = () => {
 
       {showModal && (
         <PersonalizeModal
+          mood={mood}
           showModal={showModal}
           setShowModal={setShowModal}
           favArtists={favArtists}
