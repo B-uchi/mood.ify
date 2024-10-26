@@ -6,7 +6,7 @@ import { Music, Sparkles, Share2, Clock, Heart, Wand2 } from "lucide-react";
 import { generateNotePositions } from "@/utils/generateNotePositions";
 import { MoodType, NotePosition, StatsItem } from "@/lib/types/types";
 import PersonalizeModal from "@/components/personalizeModal";
-import { getMoodClasses } from "@/utils/moodClasses";
+import { getMoodClasses } from "../utils/moodClasses";
 
 const NOTES_COUNT = 25;
 
@@ -37,6 +37,7 @@ const LandingPage: React.FC = () => {
     { icon: Clock, label: "Hours of Music", value: "100K+" },
     { icon: Heart, label: "Happy Users", value: "10K+" },
   ];
+  
 
   const moodClasses = getMoodClasses(mood);
 
