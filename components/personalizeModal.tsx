@@ -1,13 +1,16 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Sparkles, Clock, Search, XCircleIcon } from "lucide-react";
+import { Search, XCircleIcon } from "lucide-react";
 import { searchForArtists } from "@/utils/findArtists";
 import { searchForTrack } from "@/utils/findTrack";
 import { gsap } from "gsap";
 import Spinner from "./spinner";
 import { alerta, ToastBox } from "alertajs";
+import { MoodType } from "@/lib/types/types";
+import { getMoodClasses } from "@/utils/moodClasses";
 
 type Props = {
+  mood: MoodType;
   showModal: boolean;
   favArtists: any[];
   favTracks: any[];
@@ -24,9 +27,10 @@ const PersonalizeModal = (props: Props) => {
     favTracks,
     setFavArtists,
     setFavTracks,
+    mood
   } = props;
-  let [fetchedArtists, setFetchedArtists] = useState<any[]>();
-  let [fetchedTracks, setFetchedTracks] = useState<any[]>([]);
+  const [fetchedArtists, setFetchedArtists] = useState<any[]>();
+  const [fetchedTracks, setFetchedTracks] = useState<any[]>([]);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const modalContainerRef = useRef<HTMLDivElement | null>(null);
   const [fetchingTracks, setFetchingTracks] = useState(false);
@@ -106,6 +110,8 @@ const PersonalizeModal = (props: Props) => {
       setShowFetchedTracks(true);
     }
   };
+
+  const moodClasses = getMoodClasses(mood)
 
   return (
     <div
@@ -284,12 +290,12 @@ const PersonalizeModal = (props: Props) => {
         </div>
         <div className="absolute left-0 bottom-0 w-full flex">
           <button
-            className="w-1/2 py-3 bg-teal-500 hover:bg-teal-400 rounded-bl-md"
+            className={`w-1/2 py-3 ${moodClasses.button} bg-opacity-30 rounded-bl-md`}
             onClick={() => setShowModal(false)}
           >
             Cancel
           </button>
-          <button className="w-1/2 py-3 bg-[#6B46C1] hover:bg-[#8258e6] rounded-br-md">
+          <button className={`w-1/2 py-3 ${moodClasses.button} rounded-br-md`}>
             Save
           </button>
         </div>
