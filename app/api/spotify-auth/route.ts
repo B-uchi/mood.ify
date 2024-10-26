@@ -1,7 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { headers } from "next/headers";
 
 let spotifyToken: string | null = null;
 let tokenExpiry: number | null = null;
+
+const isValidOrigin = (request: NextRequest): boolean => {
+  const origin = request.headers.get("referer");
+  console.log(origin)
+  const allowedOrigins = [
+    process.env.NEXT_PUBLIC_FRONTEND_URL, 
+    "http://localhost:3000/", 
+  ].filter(Boolean);
+
+  return origin ? allowedOrigins.includes(origin) : false;
+};
+
+const isValidApiKey = (request: NextRequest): boolean => {
+  const apiKey = request.headers.get("x-api-key");
+  const validApiKey = process.env.NEXT_PUBLIC_API_KEY_SECRET;
+  
+  return apiKey === validApiKey;
+};
 
 const getSpotifyToken = async (): Promise<string> => {
   if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET) {
@@ -37,12 +56,38 @@ const getSpotifyToken = async (): Promise<string> => {
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    if (!isValidOrigin(req)) {
+      return NextResponse.json(
+        { error: "Unauthorized origin" },
+        { status: 403 }
+      );
+    }
+
+    if (!isValidApiKey(req)) {
+      return NextResponse.json(
+        { error: "Invalid API key" },
+        { status: 401 }
+      );
+    }
+
+    const headers = {
+      "Access-Control-Allow-Origin": req.headers.get("referer") || "",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers": "x-api-key, Content-Type",
+    };
+
     if (spotifyToken && tokenExpiry && Date.now() < tokenExpiry) {
-      return NextResponse.json({ token: spotifyToken }, { status: 200 });
+      return NextResponse.json({ token: spotifyToken }, { 
+        status: 200,
+        headers 
+      });
     }
 
     const token = await getSpotifyToken();
-    return NextResponse.json({ token }, { status: 200 });
+    return NextResponse.json({ token }, { 
+      status: 200,
+      headers
+    });
 
   } catch (error) {
     console.error("Error fetching Spotify token:", error);
@@ -51,4 +96,21 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS(req: NextRequest): Promise<NextResponse> {
+  const origin = req.headers.get("origin");
+  
+  if (!isValidOrigin(req)) {
+    return NextResponse.json({}, { status: 404 });
+  }
+
+  return NextResponse.json({}, {
+    headers: {
+      "Access-Control-Allow-Origin": origin || "",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers": "x-api-key, Content-Type",
+      "Access-Control-Max-Age": "86400",
+    },
+  });
 }
