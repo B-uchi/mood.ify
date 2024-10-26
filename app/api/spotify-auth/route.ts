@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { headers } from "next/headers";
 
 let spotifyToken: string | null = null;
 let tokenExpiry: number | null = null;
