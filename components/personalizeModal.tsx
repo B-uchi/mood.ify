@@ -26,7 +26,7 @@ const PersonalizeModal = (props: Props) => {
     favTracks,
     setFavArtists,
     setFavTracks,
-    mood
+    mood,
   } = props;
   const [fetchedArtists, setFetchedArtists] = useState<any[]>();
   const [fetchedTracks, setFetchedTracks] = useState<any[]>([]);
@@ -90,10 +90,12 @@ const PersonalizeModal = (props: Props) => {
       | React.FormEvent<HTMLFormElement>
       | React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    e.preventDefault()
+    e.preventDefault();
     if (param == "artist") {
       if (!artistName) {
-        return alerta.error("Artist name is required", { title: "Empty field" });
+        return alerta.error("Artist name is required", {
+          title: "Empty field",
+        });
       }
       setFetchingArtists(true);
       setFetchedArtists(await searchForArtists(artistName));
@@ -156,14 +158,14 @@ const PersonalizeModal = (props: Props) => {
         "bg-mood-focused-primary-secondary hover:bg-mood-focused-primary-secondary/80",
     }[mood],
   });
-  const moodClasses = getMoodClasses(mood)
+  const moodClasses = getMoodClasses(mood);
 
   return (
     <div
       ref={modalContainerRef}
-      className="h-[100vh] text-[#2D3748] w-full backdrop-blur-sm absolute bg-white/30 z-10 flex justify-center items-center"
+      className="h-[100vh] text-[#2D3748] w-full backdrop-blur-sm absolute bg-white/30 z-[2] flex justify-center items-center"
     >
-      <ToastBox position="top-right" />
+        <ToastBox position="top-right" />
       <div
         ref={modalRef}
         className="lg:w-[40%] w-[90%] relative p-4 h-[90%] gap-10 flex flex-col bg-white/80 rounded-md"
