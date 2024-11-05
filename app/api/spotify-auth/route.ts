@@ -5,7 +5,6 @@ let tokenExpiry: number | null = null;
 
 const isValidOrigin = (request: NextRequest): boolean => {
   const origin = request.headers.get("referer");
-  console.log(origin)
   const allowedOrigins = [
     process.env.NEXT_PUBLIC_FRONTEND_URL, 
     "http://localhost:3000/", 
@@ -21,7 +20,7 @@ const isValidApiKey = (request: NextRequest): boolean => {
   return apiKey === validApiKey;
 };
 
-const getSpotifyToken = async (): Promise<string> => {
+export const getSpotifyToken = async (): Promise<string> => {
   if (!process.env.SPOTIFY_CLIENT_ID || !process.env.SPOTIFY_CLIENT_SECRET) {
     throw new Error(
       "Missing Spotify API credentials in environment variables."
@@ -43,7 +42,7 @@ const getSpotifyToken = async (): Promise<string> => {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch Spotify token: ${response.statusText}`);
+    throw new Error(`Failed to fetch Spotify token`);
   }
 
   const data = await response.json();
@@ -88,8 +87,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       headers
     });
 
-  } catch (error) {
-    console.error("Error fetching Spotify token:", error);
+  } catch (error: any) {
+    console.error("Error fetching Spotify token:", error.message);
     return NextResponse.json(
       { error: "Failed to fetch Spotify token" },
       { status: 500 }
