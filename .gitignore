@@ -19,6 +19,7 @@
 
 # production
 /build
+lib/firebase/moodify.json
 
 # misc
 .DS_Store
