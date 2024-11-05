@@ -6,6 +6,8 @@ import { Music, Sparkles, Share2, Clock, Heart, Wand2 } from "lucide-react";
 import { generateNotePositions } from "@/utils/generateNotePositions";
 import { MoodType, NotePosition, StatsItem } from "@/lib/types/types";
 import PersonalizeModal from "@/components/personalizeModal";
+import { getMoodClasses } from "@/utils/moodClasses";
+import { alerta, ToastBox } from "alertajs";
 
 const NOTES_COUNT = 25;
 
@@ -17,10 +19,22 @@ const LandingPage: React.FC = () => {
   const backgroundRef = useRef<HTMLDivElement | null>(null);
 
   const [mood, setMood] = useState<MoodType>("default");
+  const [moodInput, setMoodInput] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [favArtists, setFavArtists] = useState<string[]>([]);
   const [favTracks, setFavTracks] = useState<string[]>([]);
   const [notePositions, setNotePositions] = useState<NotePosition[]>([]);
+
+  const generatePlaylist = () => {
+    console.log(moodInput, mood)
+    if (!moodInput && mood == "default") {
+      return alerta.error("Type your mood or select an option.", {
+        title: "No Selection",
+      });
+    } else {
+      console.log("yeahh");
+    }
+  };
 
   const moodButtons: MoodType[] = [
     "happy",
@@ -36,53 +50,6 @@ const LandingPage: React.FC = () => {
     { icon: Clock, label: "Hours of Music", value: "100K+" },
     { icon: Heart, label: "Happy Users", value: "10K+" },
   ];
-
-  const getMoodClasses = (mood: MoodType) => ({
-    background: {
-      default:
-        "from-mood-default-primary-from via-mood-default-primary-via to-mood-default-primary-to",
-      happy:
-        "from-mood-happy-primary-from via-mood-happy-primary-via to-mood-happy-primary-to",
-      chill:
-        "from-mood-chill-primary-from via-mood-chill-primary-via to-mood-chill-primary-to",
-      energetic:
-        "from-mood-energetic-primary-from via-mood-energetic-primary-via to-mood-energetic-primary-to",
-      melancholic:
-        "from-mood-melancholic-primary-from via-mood-melancholic-primary-via to-mood-melancholic-primary-to",
-      focused:
-        "from-mood-focused-primary-from via-mood-focused-primary-via to-mood-focused-primary-to",
-    }[mood],
-    text: {
-      default: "text-mood-default-primary-text",
-      happy: "text-mood-happy-primary-text",
-      chill: "text-mood-chill-primary-text",
-      energetic: "text-mood-energetic-primary-text",
-      melancholic: "text-mood-melancholic-primary-text",
-      focused: "text-mood-focused-primary-text",
-    }[mood],
-    secondary: {
-      default: "text-mood-default-primary-secondary",
-      happy: "text-mood-happy-primary-secondary",
-      chill: "text-mood-chill-primary-secondary",
-      energetic: "text-mood-energetic-primary-secondary",
-      melancholic: "text-mood-melancholic-primary-secondary",
-      focused: "text-mood-focused-primary-secondary",
-    }[mood],
-    button: {
-      default:
-        "bg-mood-default-primary-secondary hover:bg-mood-default-primary-secondary/80",
-      happy:
-        "bg-mood-happy-primary-secondary hover:bg-mood-happy-primary-secondary/80",
-      chill:
-        "bg-mood-chill-primary-secondary hover:bg-mood-chill-primary-secondary/80",
-      energetic:
-        "bg-mood-energetic-primary-secondary hover:bg-mood-energetic-primary-secondary/80",
-      melancholic:
-        "bg-mood-melancholic-primary-secondary hover:bg-mood-melancholic-primary-secondary/80",
-      focused:
-        "bg-mood-focused-primary-secondary hover:bg-mood-focused-primary-secondary/80",
-    }[mood],
-  });
 
   const moodClasses = getMoodClasses(mood);
 
@@ -174,7 +141,7 @@ const LandingPage: React.FC = () => {
     } else {
       document.body.style.overflow = "";
     }
-  
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -182,6 +149,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen font-josefin-sans text-white relative overflow-hidden">
+      <ToastBox position="top-right" />
       <div
         ref={backgroundRef}
         className={`fixed inset-0 bg-gradient-to-br ${moodClasses.background} transition-colors duration-400`}
@@ -231,12 +199,13 @@ const LandingPage: React.FC = () => {
           <div className="flex items-center pr-2 rounded-2xl bg-white/10 backdrop-blur-sm border-2 border-white/20">
             <input
               type="text"
-              placeholder="Type your feeling..."
-              onChange={(e) => console.log(e.target.value)}
-              className={`w-full h-16 pr-2 pl-6 border-none bg-transparent text-lg ${moodClasses.text} placeholder:${moodClasses.text}/70 focus:border-none focus:ring-0 focus:outline-none transition-all duration-300`}
+              placeholder="How do you feel..."
+              value={moodInput}
+              onChange={(e) => setMoodInput(e.target.value)}
+              className={`w-full h-16 pr-2 pl-6 border-none bg-transparent text-lg ${moodClasses.text} ${moodClasses.placeholder} focus:border-none focus:ring-0 focus:outline-none transition-all duration-300`}
             />
             <button
-              onClick={() => console.log("Generate playlist")}
+              onClick={() => generatePlaylist()}
               className={`${moodClasses.button} h-12 px-6 rounded-xl transition-all duration-300`}
             >
               Generate
