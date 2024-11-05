@@ -6,9 +6,9 @@ export const getMoodClasses = (mood: MoodType) => ({
   background: {
     default:
       "from-mood-default-primary-from via-mood-default-primary-via to-mood-default-primary-to",
-    happy:
+      happy:
       "from-mood-happy-primary-from via-mood-happy-primary-via to-mood-happy-primary-to",
-    chill:
+      chill:
       "from-mood-chill-primary-from via-mood-chill-primary-via to-mood-chill-primary-to",
     energetic:
       "from-mood-energetic-primary-from via-mood-energetic-primary-via to-mood-energetic-primary-to",
@@ -16,6 +16,14 @@ export const getMoodClasses = (mood: MoodType) => ({
       "from-mood-melancholic-primary-from via-mood-melancholic-primary-via to-mood-melancholic-primary-to",
     focused:
       "from-mood-focused-primary-from via-mood-focused-primary-via to-mood-focused-primary-to",
+  }[mood],
+  placeholder: { 
+    default: "placeholder:text-mood-default-primary-text",
+    happy: "placeholder:text-mood-happy-primary-text",
+    chill: "placeholder:text-mood-chill-primary-text",
+    energetic: "placeholder:text-mood-energetic-primary-text",
+    melancholic: "placeholder:text-mood-melancholic-primary-text",
+    focused: "placeholder:text-mood-focused-primary-text",
   }[mood],
   text: {
     default: "text-mood-default-primary-text",
