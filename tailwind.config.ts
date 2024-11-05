@@ -6,6 +6,7 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./utils/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -22,11 +23,11 @@ const config: Config = {
           },
           happy: {
             primary: {
-              from: "#f59e0b",
-              via: "#fb923c",
-              to: "#f87171",
-              secondary: "#F472B6", // pink-400
-              text: "#FEF08A", // yellow-200
+              from: "#F97316",   // orange-500
+              via: "#FB7185",    // rose-400
+              to: "#FDA4AF",     // rose-300
+              secondary: "#38BDF8", // sky-400
+              text: "#FDF2F8",     // pink-50
             },
           },
           chill: {
