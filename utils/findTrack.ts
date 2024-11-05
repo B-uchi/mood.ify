@@ -49,10 +49,8 @@ export const searchForTrack = async (query: string) => {
         image: track.album.images[0].url,
       });
     }
-    console.log(result);
     return result;
   } catch (error) {
-    console.log(error);
     return [
       {
         id: "notfound",

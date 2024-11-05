@@ -51,7 +51,6 @@ export const searchForArtists = async (query: string) => {
         image: artist.images[0].url,
       });
     }
-    console.log(result);
     return result;
   } catch (error) {
     return [
