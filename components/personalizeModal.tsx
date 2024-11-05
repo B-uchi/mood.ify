@@ -7,6 +7,7 @@ import { gsap } from "gsap";
 import Spinner from "./spinner";
 import { alerta, ToastBox } from "alertajs";
 import { MoodType } from "@/lib/types/types";
+import { getMoodClasses } from "@/utils/moodClasses";
 
 type Props = {
   mood: MoodType;
@@ -112,63 +113,30 @@ const PersonalizeModal = (props: Props) => {
     }
   };
 
-  const getMoodClasses = (mood: MoodType) => ({
-    background: {
-      default:
-        "from-mood-default-primary-from via-mood-default-primary-via to-mood-default-primary-to",
-      happy:
-        "from-mood-happy-primary-from via-mood-happy-primary-via to-mood-happy-primary-to",
-      chill:
-        "from-mood-chill-primary-from via-mood-chill-primary-via to-mood-chill-primary-to",
-      energetic:
-        "from-mood-energetic-primary-from via-mood-energetic-primary-via to-mood-energetic-primary-to",
-      melancholic:
-        "from-mood-melancholic-primary-from via-mood-melancholic-primary-via to-mood-melancholic-primary-to",
-      focused:
-        "from-mood-focused-primary-from via-mood-focused-primary-via to-mood-focused-primary-to",
-    }[mood],
-    text: {
-      default: "text-mood-default-primary-text",
-      happy: "text-mood-happy-primary-text",
-      chill: "text-mood-chill-primary-text",
-      energetic: "text-mood-energetic-primary-text",
-      melancholic: "text-mood-melancholic-primary-text",
-      focused: "text-mood-focused-primary-text",
-    }[mood],
-    secondary: {
-      default: "text-mood-default-primary-secondary",
-      happy: "text-mood-happy-primary-secondary",
-      chill: "text-mood-chill-primary-secondary",
-      energetic: "text-mood-energetic-primary-secondary",
-      melancholic: "text-mood-melancholic-primary-secondary",
-      focused: "text-mood-focused-primary-secondary",
-    }[mood],
-    button: {
-      default:
-        "bg-mood-default-primary-secondary hover:bg-mood-default-primary-secondary/80",
-      happy:
-        "bg-mood-happy-primary-secondary hover:bg-mood-happy-primary-secondary/80",
-      chill:
-        "bg-mood-chill-primary-secondary hover:bg-mood-chill-primary-secondary/80",
-      energetic:
-        "bg-mood-energetic-primary-secondary hover:bg-mood-energetic-primary-secondary/80",
-      melancholic:
-        "bg-mood-melancholic-primary-secondary hover:bg-mood-melancholic-primary-secondary/80",
-      focused:
-        "bg-mood-focused-primary-secondary hover:bg-mood-focused-primary-secondary/80",
-    }[mood],
-  });
   const moodClasses = getMoodClasses(mood);
+
+  const saveOptions = () => {
+    if (favTracks.length < 1 && favArtists.length < 1) {
+      alerta.error("No options to save.", { title: "Aww!" });
+    } else {
+      alerta.info("Options saved.", {
+        title: "Great!",
+        onClose: () => {
+          setShowModal(false);
+        },
+      });
+    }
+  };
 
   return (
     <div
       ref={modalContainerRef}
       className="h-[100vh] text-[#2D3748] w-full backdrop-blur-sm absolute bg-white/30 z-[2] flex justify-center items-center"
     >
-        <ToastBox position="top-right" />
+      <ToastBox position="top-right" />
       <div
         ref={modalRef}
-        className="lg:w-[40%] w-[90%] relative p-4 h-[90%] gap-10 flex flex-col bg-white/80 rounded-md"
+        className="lg:w-[40%] w-[90%] relative p-4 h-[70%] gap-10 flex flex-col bg-white/80 rounded-md"
       >
         <div className="">
           <h1 className="text-xl font-bold">Personalize your results</h1>
@@ -338,11 +306,20 @@ const PersonalizeModal = (props: Props) => {
         <div className="absolute left-0 bottom-0 w-full flex">
           <button
             className={`w-1/2 py-3 ${moodClasses.button} bg-opacity-30 rounded-bl-md`}
-            onClick={() => setShowModal(false)}
+            onClick={() => {
+              setFavArtists([]);
+              setFavTracks([]);
+              setShowModal(false);
+            }}
           >
             Cancel
           </button>
-          <button className={`w-1/2 py-3 ${moodClasses.button} rounded-br-md`}>
+          <button
+            onClick={() => {
+              saveOptions();
+            }}
+            className={`w-1/2 py-3 ${moodClasses.button} rounded-br-md`}
+          >
             Save
           </button>
         </div>
