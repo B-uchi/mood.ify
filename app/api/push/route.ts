@@ -279,7 +279,7 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({
       status: 200,
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: "Error" }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json({ error: `Error: ${e}` }, { status: 500 });
   }
 }

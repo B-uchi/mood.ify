@@ -51,9 +51,9 @@ function WebPlayback(props: Props) {
           });
         } else if (response.status == 429) {
           alerta.error("Rate exceeded", { title: "Oops!" });
-        }else{
-          const error = await response.json()
-          console.log(error)
+        } else {
+          const error = await response.json();
+          console.log(error);
         }
       }
     };
@@ -91,7 +91,7 @@ function WebPlayback(props: Props) {
         if (!state) {
           return;
         }
-        
+
         setTrackPosition(state.position);
         setCurrentTrack(state.track_window.current_track);
         setIsPaused(state.paused);
@@ -143,8 +143,8 @@ function WebPlayback(props: Props) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
-        event.preventDefault(); // Prevents the default space key behavior, such as scrolling
-        player && player.togglePlay();
+        event.preventDefault();
+        player.togglePlay();
       }
     };
 
@@ -157,13 +157,9 @@ function WebPlayback(props: Props) {
 
   const togglePlay = useCallback(async () => {
     if (player) {
-      try {
-        player?.togglePlay().then(() => {
-          setIsPaused(!isPaused);
-        });
-      } catch (error) {
-        console.log("error");
-      }
+      player?.togglePlay().then(() => {
+        setIsPaused(!isPaused);
+      });
     }
   }, [player, isPaused]);
 
