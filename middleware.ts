@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const isValidOrigin = (request: NextRequest): boolean => {
-  const origin = request.headers.get("origin");
+  const origin = request.headers.get("referer");
 
   const baseOrigin = process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
   const allowedOrigins = [
     new RegExp(`^${baseOrigin}(/|$)`),
     /^http:\/\/localhost:3000(\/|$)/ 
   ];
+
 
   return origin ? allowedOrigins.some((regex) => regex.test(origin)) : false;
 };
