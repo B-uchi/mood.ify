@@ -1,9 +1,24 @@
-import React, { useEffect, useRef } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { getMoodClasses } from "@/utils/moodClasses";
+import { MoodType } from "@/lib/types/types";
 
-const MusicalNotes: React.FC = () => {
+type Props = { mood?: MoodType; type?: string };
+
+const MusicalNotes = (props: Props) => {
+  const { mood, type } = props;
+
+  const messages = [
+    "Tuning into your mood...",
+    "Generating your playlist...",
+    "Finding the perfect tracks...",
+    "Creating the vibe...",
+    "Almost there...",
+  ];
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+
   const notesRef = useRef<HTMLDivElement[]>([]);
-
   useEffect(() => {
     if (notesRef.current) {
       gsap.fromTo(
@@ -12,7 +27,7 @@ const MusicalNotes: React.FC = () => {
         {
           y: 0,
           scale: 1.2,
-          duration: 0.3,
+          duration: 0.5,
           ease: "power2.inOut",
           stagger: {
             each: 0.2,
@@ -24,8 +39,21 @@ const MusicalNotes: React.FC = () => {
     }
   }, []);
 
+  let moodClasses;
+  if (mood) {
+    moodClasses = getMoodClasses(mood);
+  }
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className={`flex items-center justify-center h-screen flex-col gap-5 relative inset-0 bg-gradient-to-br ${moodClasses && moodClasses.background} transition-colors duration-400`} >
       <div className="flex gap-4">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
@@ -39,6 +67,11 @@ const MusicalNotes: React.FC = () => {
           </div>
         ))}
       </div>
+      {type == "loading" && (
+        <h1 className={`z-10 font-josefin-sans text-2xl ${moodClasses && moodClasses.text}`}>
+          {messages[currentMessageIndex]}
+        </h1>
+      )}
     </div>
   );
 };
