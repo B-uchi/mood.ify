@@ -1,5 +1,5 @@
 "use client";
-import MusicalNotes from "@/components/loading";
+import Loading from "@/components/loading";
 import { MoodType, NotePosition } from "@/lib/types/types";
 import { generateNotePositions } from "@/utils/generateNotePositions";
 import { getMoodClasses } from "@/utils/moodClasses";
@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "react";
 import { NOTES_COUNT } from "../page";
 import gsap from "gsap";
 import { alerta, ToastBox } from "alertajs";
-import { cookies } from "next/headers";
 import Spinner from "@/components/spinner";
 import WebPlayback from "@/components/WebPlayback";
+import { HomeIcon } from "lucide-react";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,7 @@ const Page = () => {
   const [token, setToken] = useState("");
   const [checkingToken, setCheckingToken] = useState(true);
   const [isToken, setIsToken] = useState(false);
+  const [playTrack, setPlayTrack] = useState(null);
   let moodClasses = getMoodClasses(mood);
   const router = useRouter();
   useEffect(() => {
@@ -37,8 +38,8 @@ const Page = () => {
       }
 
       if (!stored_tracks) {
-        setLoading(false);
         router.push("/");
+        setLoading(false);
         return;
       }
       setTracks(stored_tracks ? JSON.parse(atob(stored_tracks)).data : []);
@@ -96,6 +97,12 @@ const Page = () => {
     return () => animations.revert();
   }, [notePositions]);
 
+  useEffect(() => {
+    if (tracks) {
+      setPlayTrack(tracks[0]);
+    }
+  }, [tracks]);
+
   function formatTimestamp(milliseconds: number): string {
     const minutes = Math.floor(milliseconds / 60000);
     const seconds = Math.floor((milliseconds % 60000) / 1000);
@@ -113,9 +120,13 @@ const Page = () => {
     window.location.href = "/api/spotify-auth/login";
   };
 
+  const startPlay = (track: any) => {
+    setPlayTrack(track);
+  };
+
   return (
     <div className="">
-      {loading && <MusicalNotes mood={mood} type="loading" />}
+      {loading && <Loading mood={mood} type="loading" />}
       {!loading && (
         <div
           className={`fixed overflow-auto h-screen font-josefin-sans text-white flex flex-col inset-0 bg-gradient-to-br ${moodClasses.background} transition-colors duration-400`}
@@ -136,17 +147,24 @@ const Page = () => {
             ))}
           </div>
 
-          <header className="text-center py-10">
-            <h1 className="text-5xl font-bold">
-              <span className="text-white">Your</span>
-              <span className={`${moodClasses.secondary} italic`}>
-                {" "}
-                Playlist
-              </span>
-            </h1>
-            <p className={`text-xl mt-4 ${moodClasses.text}`}>
-              Enjoy your mood-curated tracks
-            </p>
+          <header className="text-center relative py-10">
+            <div className="self-start justify-self mb-5 md:absolute left-36 top-1/2 -translate-y-[50%]">
+              <button onClick={()=>router.push("/")} className={`${moodClasses.button}/10 p-5 rounded-full`}>
+                <HomeIcon />
+              </button>
+            </div>
+            <div className="">
+              <h1 className="text-5xl font-bold">
+                <span className="text-white">Your</span>
+                <span className={`${moodClasses.secondary} italic`}>
+                  {" "}
+                  Playlist
+                </span>
+              </h1>
+              <p className={`text-xl mt-4 ${moodClasses.text}`}>
+                Enjoy your mood-curated tracks
+              </p>
+            </div>
           </header>
 
           <div className="flex lg:flex-row flex-col-reverse px-8 lg:px-20 gap-6">
@@ -158,6 +176,7 @@ const Page = () => {
                   {tracks.map((track: any, index: number) => (
                     <div
                       key={track.id}
+                      onClick={() => startPlay(track)}
                       className="flex items-center gap-3 w-full"
                     >
                       {index + 1}
@@ -212,10 +231,10 @@ const Page = () => {
                 </>
               )}
               {!checkingToken && isToken && (
-                <div className="h-full">
+                <div className="h-full flex flex-col">
                   {" "}
                   <h2 className="text-2xl font-semibold">Listen Now</h2>
-                  <WebPlayback token={token} />
+                  <WebPlayback token={token} playTrack={playTrack} />
                 </div>
               )}
             </div>
