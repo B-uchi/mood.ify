@@ -11,7 +11,7 @@ const SongProgressBar: React.FC<ProgressBarProps> = ({
   currentPosition,
   isPlaying,
 }) => {
-  const [progress, setProgress] = useState(0);
+  const [, setProgress] = useState(0);
   const [progressPercentage, setProgressPercentage] = useState(0);
 
   useEffect(() => {

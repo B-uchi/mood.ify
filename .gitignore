@@ -20,6 +20,7 @@
 # production
 /build
 lib/firebase/moodify.json
+app/api/push/route.ts
 
 # misc
 .DS_Store

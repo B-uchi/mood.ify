@@ -11,7 +11,7 @@ const generateRandomString = function (length: number) {
   return text;
 };
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
     const project_url = process.env.NEXT_PUBLIC_WEB_URL;

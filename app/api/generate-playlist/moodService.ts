@@ -54,7 +54,7 @@ class MoodService {
 
       let moodSeedData;
 
-      for (const [_, moodData] of Object.entries(fullMoodDoc.data() as MoodDocData)) {
+      for (const [, moodData] of Object.entries(fullMoodDoc.data() as MoodDocData)) {
         const data = moodData;
         if (data.synonyms && data.synonyms.includes(mood)) {
           moodSeedData = data.seed_data;
