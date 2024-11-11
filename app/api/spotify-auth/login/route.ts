@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-var generateRandomString = function (length: number) {
-  var text = "";
-  var possible =
+const generateRandomString = function (length: number) {
+  let text = "";
+  const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
@@ -22,14 +22,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         { status: 500 }
       );
     }
-    var scope =
+    const scope =
       "streaming \
                  user-read-email \
                  user-modify-playback-state\
                  user-read-private";
 
-    var state = generateRandomString(16);
-    var auth_query_parameters = new URLSearchParams({
+    const state = generateRandomString(16);
+    const auth_query_parameters = new URLSearchParams({
       response_type: "code",
       client_id: spotify_client_id,
       scope: scope,

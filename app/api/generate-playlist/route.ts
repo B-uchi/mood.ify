@@ -63,11 +63,11 @@ const getSpotifyReqParam = async (
         }
       );
     }
-    let [category, refined_mood] = mood
+    const [category, refined_mood] = mood
       .replace(/<|>/g, "")
       .split(":")
       .map((x) => x.trim());
-    let spotifyRequestParam = spotifyRequest;
+    const spotifyRequestParam = spotifyRequest;
     return { refined_mood, spotifyRequestParam, category };
   } catch (error) {
     console.log(error);
@@ -111,7 +111,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       }
     } catch (error) {
       return NextResponse.json(
-        { error: "Invalid request body" },
+        { error: `Invalid request body: ${error}` },
         { status: 400 }
       );
     }
@@ -142,21 +142,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       moodMap = (await moodService.getDefaultSeeds()) as MoodMap["seed_data"];
     }
 
+    let seed_genres = "";
+    let seedTracks = "";
     let seedArtists = "";
+
     if (body.seedArtists.length != 0) {
       seedArtists = `seed_artists=${body.seedArtists.join("%2C")}&`;
     } else {
       seedArtists = `seed_artists=${moodMap.tracks.join("%2C")}&`;
     }
 
-    let seedTracks = "";
     if (body.seedTracks.length != 0) {
       seedTracks = `seed_tracks=${body.seedTracks.join("%2C")}&`;
     } else {
       seedTracks = `seed_tracks=${moodMap.tracks.join("%2C")}&`;
     }
 
-    let seed_genres = "";
     if (body.seedGenres.length != 0) {
       seed_genres = `seed_genres=${body.seedGenres.join("%2C")}&`;
     } else {
