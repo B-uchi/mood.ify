@@ -6,7 +6,7 @@ import { MoodType } from "@/lib/types/types";
 
 type Props = { mood?: MoodType; type?: string };
 
-const MusicalNotes = (props: Props) => {
+const Loading = (props: Props) => {
   const { mood, type } = props;
 
   const messages = [
@@ -76,4 +76,4 @@ const MusicalNotes = (props: Props) => {
   );
 };
 
-export default MusicalNotes;
+export default Loading;

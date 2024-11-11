@@ -8,7 +8,7 @@ import { MoodType, NotePosition, StatsItem } from "@/lib/types/types";
 import PersonalizeModal from "@/components/personalizeModal";
 import { getMoodClasses } from "@/utils/moodClasses";
 import { alerta, ToastBox } from "alertajs";
-import MusicalNotes from "@/components/loading";
+import Loading from "@/components/loading";
 import { useRouter } from "next/navigation";
 
 export const NOTES_COUNT = 25;
@@ -214,7 +214,7 @@ const LandingPage: React.FC = () => {
           ))}
         </div>
 
-        {loading && <MusicalNotes type={"loading"} />}
+        {loading && <Loading type={"loading"} />}
         {!loading && (
           <>
             {showModal && (
