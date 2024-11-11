@@ -1,54 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-.toast{
+.toast {
   font-family: "Josefin Sans" !important;
+  color: black;
   z-index: 50 !important;
-
 }
-.toast-container{
-z-index: 10;
+.toast-container {
+  z-index: 10;
 }
 
-/* From Uiverse.io by barisdogansutcu */ 
+/* From Uiverse.io by barisdogansutcu */
 .spinnerS {
   width: 2em;
   transform-origin: center;
   animation: rotate4 2s linear infinite;
- }
- 
- .spinnerC{
+}
+
+.spinnerC {
   fill: none;
-  stroke: #6B46C1;
+  stroke: #ffffff;
   stroke-width: 3;
   stroke-dasharray: 1, 200;
   stroke-dashoffset: 0;
   stroke-linecap: round;
   animation: dash4 1.5s ease-in-out infinite;
- }
- 
- @keyframes rotate4 {
+}
+
+@keyframes rotate4 {
   100% {
-   transform: rotate(360deg);
+    transform: rotate(360deg);
   }
- }
- 
- @keyframes dash4 {
+}
+
+@keyframes dash4 {
   0% {
-   stroke-dasharray: 1, 200;
-   stroke-dashoffset: 0;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
   }
- 
+
   50% {
-   stroke-dasharray: 90, 200;
-   stroke-dashoffset: -35px;
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
   }
- 
+
   100% {
-   stroke-dashoffset: -125px;
+    stroke-dashoffset: -125px;
   }
- }
- 
+}
+
+/* .text-glass {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.border-white-10 {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hover\:bg-white-10:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+} */
