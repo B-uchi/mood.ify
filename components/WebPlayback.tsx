@@ -1,6 +1,7 @@
 import { alerta } from "alertajs";
 import { FastForward, PauseCircle, PlayCircle, Rewind } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
+import SongProgressBar from "./songProgressBar";
 
 const track = {
   name: "",
@@ -8,19 +9,56 @@ const track = {
     images: [{ url: "" }],
   },
   artists: [{ name: "" }],
+  duration_ms: 0,
 };
 
 type Props = {
   token: string;
+  playTrack: any;
 };
 
 function WebPlayback(props: Props) {
   const [isPaused, setIsPaused] = useState(true);
   const [isActive, setIsActive] = useState(false);
+  const [trackPosition, setTrackPosition] = useState<number>(0);
   const [transferringPlayback, setTransferringPlayback] = useState(true);
   const [player, setPlayer] = useState<any | null>(null);
   const [deviceId, setDeviceId] = useState("");
   const [currentTrack, setCurrentTrack] = useState(track);
+
+  useEffect(() => {
+    const playTrack = async () => {
+      if (deviceId) {
+        const response = await fetch(
+          `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              uris: [props.playTrack.uri],
+              position_ms: 0,
+            }),
+            headers: {
+              Authorization: "Bearer " + props.token,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.status == 204) {
+          alerta.success("Playback started", { title: "Hurray!" });
+        } else if (response.status == 401 || 403) {
+          alerta.error("Couldn't start playback", {
+            title: "Oops!",
+          });
+        } else if (response.status == 429) {
+          alerta.error("Rate exceeded", { title: "Oops!" });
+        }else{
+          const error = await response.json()
+          console.log(error)
+        }
+      }
+    };
+    playTrack();
+  }, [props.playTrack, deviceId]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -53,7 +91,8 @@ function WebPlayback(props: Props) {
         if (!state) {
           return;
         }
-
+        
+        setTrackPosition(state.position);
         setCurrentTrack(state.track_window.current_track);
         setIsPaused(state.paused);
         setIsActive(true);
@@ -76,6 +115,7 @@ function WebPlayback(props: Props) {
           method: "PUT",
           body: JSON.stringify({
             device_ids: [deviceId],
+            play: true,
           }),
           headers: {
             Authorization: "Bearer " + props.token,
@@ -100,11 +140,30 @@ function WebPlayback(props: Props) {
     transferPlaybackToMoodify();
   }, [deviceId]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "Space") {
+        event.preventDefault(); // Prevents the default space key behavior, such as scrolling
+        player && player.togglePlay();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [player]);
+
   const togglePlay = useCallback(async () => {
     if (player) {
-      player.togglePlay().then(() => {
-        setIsPaused(!isPaused);
-      });
+      try {
+        player?.togglePlay().then(() => {
+          setIsPaused(!isPaused);
+        });
+      } catch (error) {
+        console.log("error");
+      }
     }
   }, [player, isPaused]);
 
@@ -131,33 +190,42 @@ function WebPlayback(props: Props) {
   }
 
   return (
-    <div className="container">
-      <div className="main-wrapper">
+    <div className="flex md:flex-row flex-col gap-2 justify-center items-center h-full container">
+      <div className="md:w-1/2">
         <img
           src={currentTrack?.album.images[0].url}
-          className="now-playing__cover"
+          className="now-playing__cover rounded-md mx-auto"
           alt=""
         />
-
+      </div>
+      <div className="md:w-1/2 space-y-5 md:space-y-10 w-full">
         <div className="now-playing__side">
-          <div className="now-playing__name">{currentTrack?.name}</div>
-          <div className="now-playing__artist">
-            {currentTrack?.artists[0].name}
+          <div className="text-2xl mt-2 md:text-3xl font-bold">
+            Track: {currentTrack?.name}
           </div>
-
+          <div className="now-playing__artist">
+            Artist(s): {currentTrack?.artists[0].name}
+          </div>
+        </div>
+        <SongProgressBar
+          currentPosition={trackPosition}
+          isPlaying={!isPaused}
+          duration={currentTrack?.duration_ms}
+        />
+        <div className="flex justify-between">
           <button
             className="btn-spotify"
             onClick={() => player?.previousTrack()}
           >
-            <Rewind />
+            <Rewind size={55} />
           </button>
 
           <button className="btn-spotify" onClick={togglePlay}>
-            {isPaused ? <PlayCircle /> : <PauseCircle />}
+            {isPaused ? <PlayCircle size={55} /> : <PauseCircle size={55} />}
           </button>
 
           <button className="btn-spotify" onClick={() => player?.nextTrack()}>
-            <FastForward />
+            <FastForward size={55} />
           </button>
         </div>
       </div>
