@@ -1,5 +1,5 @@
 import { adminDb } from "@/lib/firebase/firebaseAdmin";
-import { DocumentData, FieldValue } from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
 
 export type MoodMap = {
   synonyms: string[];
@@ -13,6 +13,9 @@ export type MoodMap = {
     lastUsed: Date;
   };
 };
+type MoodDocData = {
+  [key: string]: MoodMap;
+}
 
 class MoodService {
   private cache: Map<
@@ -51,8 +54,8 @@ class MoodService {
 
       let moodSeedData;
 
-      for (const [moodName, moodData] of Object.entries(fullMoodDoc.data())) {
-        const data = moodData as MoodMap;
+      for (const [_, moodData] of Object.entries(fullMoodDoc.data() as MoodDocData)) {
+        const data = moodData;
         if (data.synonyms && data.synonyms.includes(mood)) {
           moodSeedData = data.seed_data;
         }
@@ -107,7 +110,7 @@ class MoodService {
       await seedRef.update({
         score: rating,
         lastRatedBy: userId,
-        lastRatedAt: adminDb.firestore.FieldValue.serverTimestamp(),
+        lastRatedAt: FieldValue.serverTimestamp(),
       });
 
       // Clear cache for this mood
