@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getSpotifyToken } from "../spotify-auth/route";
+import { getSpotifyToken } from "@/utils/getSpotifyAccessToken";
 import { MoodMap, moodService } from "./moodService";
 // import { createHash } from "crypto";
 
