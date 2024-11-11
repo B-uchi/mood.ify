@@ -3,12 +3,14 @@ import type { NextRequest } from "next/server";
 
 const isValidOrigin = (request: NextRequest): boolean => {
   const origin = request.headers.get("origin");
-  const allowedOrigins = [
-    process.env.NEXT_PUBLIC_WEB_URL,
-    "http://localhost:3000/",
-  ].filter(Boolean);
 
-  return origin ? allowedOrigins.includes(origin) : false;
+  const baseOrigin = process.env.NEXT_PUBLIC_WEB_URL?.replace(/\/+$/, "");
+  const allowedOrigins = [
+    new RegExp(`^${baseOrigin}(/|$)`),
+    /^http:\/\/localhost:3000(\/|$)/ 
+  ];
+
+  return origin ? allowedOrigins.some((regex) => regex.test(origin)) : false;
 };
 
 const isValidApiKey = (request: NextRequest): boolean => {
