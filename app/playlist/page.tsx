@@ -5,7 +5,6 @@ import { generateNotePositions } from "@/utils/generateNotePositions";
 import { getMoodClasses } from "@/utils/moodClasses";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { NOTES_COUNT } from "../page";
 import gsap from "gsap";
 import { alerta, ToastBox } from "alertajs";
 import Spinner from "@/components/spinner";
@@ -70,7 +69,7 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    setNotePositions(generateNotePositions(NOTES_COUNT));
+    setNotePositions(generateNotePositions(25));
   }, []);
 
   useEffect(() => {

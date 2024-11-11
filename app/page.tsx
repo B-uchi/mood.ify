@@ -11,7 +11,7 @@ import { alerta, ToastBox } from "alertajs";
 import Loading from "@/components/loading";
 import { useRouter } from "next/navigation";
 
-export const NOTES_COUNT = 25;
+const NOTES_COUNT = 25;
 
 const LandingPage: React.FC = () => {
   const headerRef = useRef<HTMLElement | null>(null);
