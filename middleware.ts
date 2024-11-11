@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const isValidOrigin = (request: NextRequest): boolean => {
-  const origin = request.headers.get("referer");
+  const origin = request.headers.get("origin");
   const allowedOrigins = [
     process.env.NEXT_PUBLIC_WEB_URL,
     "http://localhost:3000/",
