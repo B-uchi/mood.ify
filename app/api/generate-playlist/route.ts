@@ -142,7 +142,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       moodMap = (await moodService.getDefaultSeeds()) as MoodMap["seed_data"];
     }
 
-    let seedGenres = "";
+    // let seedGenres = "";
     let seedTracks = "";
     let seedArtists = "";
 
@@ -158,17 +158,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       seedTracks = `seed_tracks=${moodMap.tracks.join("%2C")}&`;
     }
 
-    if (body.seedGenres.length != 0) {
-      seedGenres = `seed_genres=${body.seedGenres.join("%2C")}&`;
-    } else {
-      seedGenres = `seed_genres=${moodMap.genres.join("%2C")}&`;
-    }
+    // if (body.seedGenres.length != 0) {
+    //   seedGenres = `seed_genres=${body.seedGenres.join("%2C")}&`;
+    // } else {
+    //   seedGenres = `seed_genres=${moodMap.genres.join("%2C")}&`;
+    // }
 
-    const api_key = await getSpotifyToken();
+    
+
+    const token_data = await getSpotifyToken();
+    const api_key = token_data.access_token
 
     const url = `https://api.spotify.com/v1/recommendations?limit=5&${
       seedArtists ? seedArtists : ""
-    }${seedGenres ? seedGenres : ""}${
+    }${
       seedTracks ? seedTracks : ""
     }${spotifyRequestParam}`.replace(/['"]/g, "");
 
