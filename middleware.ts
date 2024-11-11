@@ -3,11 +3,9 @@ import type { NextRequest } from "next/server";
 
 const isValidOrigin = (request: NextRequest): boolean => {
   const origin = request.headers.get("referer");
-  console.log(origin);
   const allowedOrigins = [
-    process.env.NEXT_PUBLIC_FRONTEND_URL,
+    process.env.NEXT_PUBLIC_WEB_URL,
     "http://localhost:3000/",
-    "http://localhost:3000/playlist",
   ].filter(Boolean);
 
   return origin ? allowedOrigins.includes(origin) : false;
