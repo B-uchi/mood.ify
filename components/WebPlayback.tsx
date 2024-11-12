@@ -1,7 +1,9 @@
 import { alerta } from "alertajs";
 import { FastForward, PauseCircle, PlayCircle, Rewind } from "lucide-react";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import SongProgressBar from "./songProgressBar";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 const track = {
   name: "",
@@ -25,6 +27,20 @@ function WebPlayback(props: Props) {
   const [player, setPlayer] = useState<any | null>(null);
   const [deviceId, setDeviceId] = useState("");
   const [currentTrack, setCurrentTrack] = useState(track);
+
+  const pathname = usePathname();
+  const playerRef = useRef<any>(null);
+
+  useEffect(() => {
+    return () => {
+      if (playerRef.current) {
+        console.log("Disconnecting player due to navigation");
+        playerRef.current.disconnect();
+        setPlayer(null);
+        playerRef.current = null;
+      }
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const playTrack = async () => {
@@ -64,11 +80,10 @@ function WebPlayback(props: Props) {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
-
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      const player = new window.Spotify.Player({
+      const spotifyPlayer = new window.Spotify.Player({
         name: "Mood.ify Web Player",
         getOAuthToken: (cb: (token: string) => void) => {
           cb(props.token);
@@ -76,37 +91,95 @@ function WebPlayback(props: Props) {
         volume: 0.5,
       });
 
-      setPlayer(player);
+      setPlayer(spotifyPlayer);
+      playerRef.current = spotifyPlayer;
 
-      player.addListener("ready", ({ device_id }: { device_id: string }) => {
-        setDeviceId(device_id);
-        console.log("Ready to play");
-      });
+      spotifyPlayer.addListener(
+        "ready",
+        ({ device_id }: { device_id: string }) => {
+          setDeviceId(device_id);
+          console.log("Ready to play");
+        }
+      );
 
-      player.addListener("not_ready", () => {
+      spotifyPlayer.addListener("not_ready", () => {
         console.log("Device has gone offline");
       });
 
-      player.addListener("player_state_changed", (state: any) => {
-        if (!state) {
-          return;
-        }
-
+      spotifyPlayer.addListener("player_state_changed", (state: any) => {
+        if (!state) return;
         setTrackPosition(state.position);
         setCurrentTrack(state.track_window.current_track);
         setIsPaused(state.paused);
         setIsActive(true);
       });
 
-      player.connect();
+      spotifyPlayer.connect();
     };
 
     return () => {
-      if (player) {
-        player.disconnect();
+      if (playerRef.current) {
+        console.log("Disconnecting player in cleanup");
+        playerRef.current.disconnect();
+        setPlayer(null);
+        playerRef.current = null;
+      }
+      const spotifyScript = document.querySelector(
+        'script[src="https://sdk.scdn.co/spotify-player.js"]'
+      );
+      if (spotifyScript) {
+        spotifyScript.remove();
       }
     };
   }, [props.token]);
+
+  // useEffect(() => {
+  //   const script = document.createElement("script");
+  //   script.src = "https://sdk.scdn.co/spotify-player.js";
+  //   script.async = true;
+
+  //   document.body.appendChild(script);
+
+  //   window.onSpotifyWebPlaybackSDKReady = () => {
+  //     const player = new window.Spotify.Player({
+  //       name: "Mood.ify Web Player",
+  //       getOAuthToken: (cb: (token: string) => void) => {
+  //         cb(props.token);
+  //       },
+  //       volume: 0.5,
+  //     });
+
+  //     setPlayer(player);
+
+  //     player.addListener("ready", ({ device_id }: { device_id: string }) => {
+  //       setDeviceId(device_id);
+  //       console.log("Ready to play");
+  //     });
+
+  //     player.addListener("not_ready", () => {
+  //       console.log("Device has gone offline");
+  //     });
+
+  //     player.addListener("player_state_changed", (state: any) => {
+  //       if (!state) {
+  //         return;
+  //       }
+
+  //       setTrackPosition(state.position);
+  //       setCurrentTrack(state.track_window.current_track);
+  //       setIsPaused(state.paused);
+  //       setIsActive(true);
+  //     });
+
+  //     player.connect();
+  //   };
+
+  //   return () => {
+  //     if (player) {
+  //       player.disconnect();
+  //     }
+  //   };
+  // }, [props.token, router]);
 
   useEffect(() => {
     const transferPlaybackToMoodify = async () => {
@@ -188,10 +261,12 @@ function WebPlayback(props: Props) {
   return (
     <div className="flex md:flex-row flex-col gap-2 justify-center items-center h-full container">
       <div className="md:w-1/2">
-        <img
+        <Image
           src={currentTrack?.album.images[0].url}
+          alt={`${currentTrack?.name} cover`}
           className="now-playing__cover rounded-md mx-auto"
-          alt=""
+          height={400}
+          width={400}
         />
       </div>
       <div className="md:w-1/2 space-y-5 md:space-y-10 w-full">
