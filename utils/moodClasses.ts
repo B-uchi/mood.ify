@@ -1,8 +1,8 @@
 "use client"
-import { MoodType } from "@/lib/types/types";
+import { MoodClasses, MoodType } from "@/lib/types/types";
 
   
-export const getMoodClasses = (mood: MoodType) => ({
+export const getMoodClasses = (mood: MoodType): MoodClasses => ({
   background: {
     default:
       "from-mood-default-primary-from via-mood-default-primary-via to-mood-default-primary-to",

@@ -15,3 +15,11 @@ export type MoodType =
   | "energetic"
   | "melancholic"
   | "focused";
+
+export type MoodClasses = {
+  background: string;
+  placeholder: string;
+  text: string;
+  secondary: string;
+  button: string;
+};
