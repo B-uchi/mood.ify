@@ -188,7 +188,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       },
     });
 
-    let statIncrementObj: Partial<statData> = {};
+    const statIncrementObj: Partial<statData> = {};
 
     const data = await response.json();
     statIncrementObj.totalGenerated = 1;
