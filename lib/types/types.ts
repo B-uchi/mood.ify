@@ -23,3 +23,9 @@ export type MoodClasses = {
   secondary: string;
   button: string;
 };
+export type statData = {
+  totalGenerated: number;
+  totalShares: number;
+  totalPlaylistDuration: number;
+  totalUsers: number;
+};

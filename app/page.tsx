@@ -1,10 +1,9 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { Button } from "@/components/ui/button";
-import { Music, Sparkles, Share2, Clock, Heart, Wand2 } from "lucide-react";
+import { Sparkles, Share2, Clock, Heart, Wand2 } from "lucide-react";
 import { generateNotePositions } from "@/utils/generateNotePositions";
-import { MoodType, NotePosition, StatsItem } from "@/lib/types/types";
+import { MoodType, NotePosition, statData, StatsItem } from "@/lib/types/types";
 import PersonalizeModal from "@/components/personalizeModal";
 import { getMoodClasses } from "@/utils/moodClasses";
 import { alerta, ToastBox } from "alertajs";
@@ -24,6 +23,12 @@ const LandingPage: React.FC = () => {
   const [mood, setMood] = useState<MoodType>("default");
   const [moodInput, setMoodInput] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [stats, setStats] = useState<statData>({
+    totalGenerated: 0,
+    totalPlaylistDuration: 0,
+    totalShares: 0,
+    totalUsers: 0,
+  });
   const [favArtists, setFavArtists] = useState<string[]>([]);
   const [favTracks, setFavTracks] = useState<string[]>([]);
   const [notePositions, setNotePositions] = useState<NotePosition[]>([]);
@@ -86,13 +91,47 @@ const LandingPage: React.FC = () => {
   ];
 
   const statsItems: StatsItem[] = [
-    { icon: Sparkles, label: "Playlists Generated", value: "50K+" },
-    { icon: Share2, label: "Shared Moments", value: "25K+" },
-    { icon: Clock, label: "Hours of Music", value: "100K+" },
-    { icon: Heart, label: "Happy Users", value: "10K+" },
+    {
+      icon: Sparkles,
+      label: "Playlists Generated",
+      value: "" + stats?.totalGenerated,
+    },
+    { icon: Share2, label: "Shared Moments", value: "" + stats?.totalShares },
+    {
+      icon: Clock,
+      label: "Hours of Music",
+      value: "" + stats?.totalPlaylistDuration,
+    },
+    { icon: Heart, label: "Happy Users", value: "" + stats?.totalUsers },
   ];
 
   const moodClasses = getMoodClasses(mood);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_WEB_URL + "/api/stats";
+      if (!process.env.NEXT_PUBLIC_API_KEY_SECRET) {
+        setLoading(false);
+
+        alerta.error("Client side auth error", { title: "Oops!" });
+        return;
+      }
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY_SECRET,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data.stats);
+      } else {
+        alerta.error("Error fetching stats", { title: "Oops!" });
+      }
+    };
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     sessionStorage.clear();

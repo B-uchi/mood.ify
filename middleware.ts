@@ -37,5 +37,6 @@ export const config = {
     "/api/spotify-auth",
     "/api/spotify-auth/token",
     "/api/generate-playlist",
+    "/api/stats"
   ],
 };
