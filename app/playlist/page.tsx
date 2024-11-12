@@ -9,7 +9,12 @@ import gsap from "gsap";
 import { alerta, ToastBox } from "alertajs";
 import Spinner from "@/components/spinner";
 import WebPlayback from "@/components/WebPlayback";
-import { HomeIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  PlusCircle,
+  Share2,
+} from "lucide-react";
+import PlaylistHeader from "@/components/playlistHeader";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -145,26 +150,8 @@ const Page = () => {
               </div>
             ))}
           </div>
-
-          <header className="text-center relative py-10">
-            <div className="self-start justify-self mb-5 md:absolute left-36 top-1/2 -translate-y-[50%]">
-              <button onClick={()=>router.push("/")} className={`${moodClasses.button}/10 p-5 rounded-full`}>
-                <HomeIcon />
-              </button>
-            </div>
-            <div className="">
-              <h1 className="text-5xl font-bold">
-                <span className="text-white">Your</span>
-                <span className={`${moodClasses.secondary} italic`}>
-                  {" "}
-                  Playlist
-                </span>
-              </h1>
-              <p className={`text-xl mt-4 ${moodClasses.text}`}>
-                Enjoy your mood-curated tracks
-              </p>
-            </div>
-          </header>
+          
+          <PlaylistHeader moodClasses={moodClasses} router={router} />
 
           <div className="flex lg:flex-row flex-col-reverse px-8 lg:px-20 gap-6">
             <div className="w-full lg:w-1/3 lg:mb-0 mb-5 p-4 rounded-lg backdrop-blur-sm bg-white/10 border border-white/20">
