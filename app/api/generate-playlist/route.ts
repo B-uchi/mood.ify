@@ -1,6 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSpotifyToken } from "@/utils/getSpotifyAccessToken";
 import { MoodMap, moodService } from "./moodService";
+import { adminDb } from "@/lib/firebase/firebaseAdmin";
+import { statData } from "@/lib/types/types";
+import { FieldValue } from "firebase-admin/firestore";
 // import { createHash } from "crypto";
 
 type ReqBody = {
@@ -53,6 +56,7 @@ const getSpotifyReqParam = async (
       /[\n\\~]/g,
       ""
     );
+    
     const [mood, spotifyRequest] = result.replaceAll('"', "").split(",");
 
     if (result.includes("NO")) {
@@ -164,16 +168,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     //   seedGenres = `seed_genres=${moodMap.genres.join("%2C")}&`;
     // }
 
-    
-
     const token_data = await getSpotifyToken();
-    const api_key = token_data.access_token
+    const api_key = token_data.access_token;
 
     const url = `https://api.spotify.com/v1/recommendations?limit=5&${
       seedArtists ? seedArtists : ""
-    }${
-      seedTracks ? seedTracks : ""
-    }${spotifyRequestParam}`.replace(/['"]/g, "");
+    }${seedTracks ? seedTracks : ""}${spotifyRequestParam}`.replace(
+      /['"]/g,
+      ""
+    );
 
     // const id = createHash('sha256').update(url).digest('base64url');
     // console.log(id)
@@ -185,8 +188,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       },
     });
 
+    let statIncrementObj: Partial<statData> = {};
+
     const data = await response.json();
+    statIncrementObj.totalGenerated = 1;
+    statIncrementObj.totalPlaylistDuration = 0;
+
     const track_data = data.tracks.map((song: any) => {
+      statIncrementObj.totalPlaylistDuration += song.duration_ms;
       delete song["available_markets"];
       if (song.album && song.album.available_markets) {
         delete song.album.available_markets;
@@ -194,6 +203,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       return song;
     });
+
+    //Increment stat data
+    const statRef = adminDb.collection("stats").doc("stat");
+    await statRef.update({
+      totalGenerated: FieldValue.increment(statIncrementObj.totalGenerated),
+      totalPlaylistDuration: FieldValue.increment(
+        statIncrementObj.totalPlaylistDuration
+      ),
+    });
+
     return NextResponse.json(
       {
         data: track_data,
