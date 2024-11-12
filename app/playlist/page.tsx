@@ -9,12 +9,8 @@ import gsap from "gsap";
 import { alerta, ToastBox } from "alertajs";
 import Spinner from "@/components/spinner";
 import WebPlayback from "@/components/WebPlayback";
-import {
-  ArrowLeft,
-  PlusCircle,
-  Share2,
-} from "lucide-react";
 import PlaylistHeader from "@/components/playlistHeader";
+import Image from "next/image";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -150,7 +146,7 @@ const Page = () => {
               </div>
             ))}
           </div>
-          
+
           <PlaylistHeader moodClasses={moodClasses} router={router} />
 
           <div className="flex lg:flex-row flex-col-reverse px-8 lg:px-20 gap-6">
@@ -168,10 +164,12 @@ const Page = () => {
                       {index + 1}
                       <li className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition cursor-pointer w-full">
                         <div className="flex items-center gap-4">
-                          <img
+                          <Image
                             src={track.album.images[0].url}
                             alt={`${track.name} cover`}
-                            className="w-12 h-12 rounded-md"
+                            height={48}
+                            width={48}
+                            className="rounded-md"
                           />
                           <div className="w-full">
                             <h3 className="text-md font-medium line-clamp-1">
