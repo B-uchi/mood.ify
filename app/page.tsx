@@ -318,16 +318,6 @@ const LandingPage: React.FC = () => {
                   </div>
                 ))}
               </div>
-
-              <div className="text-center">
-                <Button
-                  onClick={() => console.log("CTA clicked")}
-                  className={`${moodClasses.button} text-lg px-8 py-6 rounded-xl transition-all duration-300`}
-                >
-                  <Music className="w-5 h-5 mr-2" />
-                  Start Your Musical Journey
-                </Button>
-              </div>
             </div>
           </>
         )}
